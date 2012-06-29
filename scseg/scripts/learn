@@ -1,0 +1,21 @@
+#encoding:utf-8
+
+import sys
+from scseg.learn import Learning
+
+def learn():
+    try:
+        if len(sys.argv) == 4:
+            times = int(sys.argv[1])#第一个参数是次数
+            learn_file = sys.argv[2]#第二个参数是待学习的语料
+            save_file = sys.argv[3]#第三个参数是文件保存的位置
+            l = Learning(times)
+            l.learn(learn_file)
+            l.save(save_file)
+        else:
+            print(u'参数错误！！第一个参数是次数，第二个参数是语料位置，第三个参数是保存的位置')
+    except BaseException as e:
+        print(u'参数不合法，第一个参数必须是整数值')
+        raise e
+if __name__=='__main__':
+    learn()
