@@ -1,5 +1,9 @@
 syntax:glob
-	
+
+*.file
+*.out
+*.~
+*.directory
 *.egg-info
 *.pot
 *.swp
