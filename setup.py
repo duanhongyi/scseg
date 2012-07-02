@@ -6,7 +6,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.txt')).read()
 CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 # need install xapian-binding-python
-scripts = ['scseg/scripts/learn']
+scripts = ['scripts/learn']
 requires = [
     'nose',
     'chardet',
