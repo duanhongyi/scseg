@@ -29,7 +29,7 @@ setup(name='scseg',
       install_requires=requires,
       tests_require=requires,
       scripts = scripts,
-      platform = 'all platform',
+      platforms = 'all platform',
       license = 'BSD',
       homepage = 'https://bitbucket.org/duanhongyi/scseg/get',
       )
