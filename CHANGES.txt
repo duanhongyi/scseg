@@ -1,4 +1,5 @@
-1.1
+1.2
 ---
 
--  Initial version
+1、修改枚举chunks算法，增强枚举性能。
+2、修改keywords算法，增加数字歧义识别功能。
