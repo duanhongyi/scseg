@@ -3,6 +3,7 @@ import os
 import re
 from route.mmseg import route
 from .word import Word,Dictionary
+from .digital import is_number,chinese_to_number
 
 here = os.path.abspath(os.path.dirname(__file__))
 dict_words = Dictionary(here+os.sep+'data')
@@ -41,19 +42,17 @@ class Chunk(object):
         return sum
 
 
-regex = u'[a-zA-Z0-9_]+[*?]*|[\u4E00-\u9FFF\u3400-\u4dbf\uf900-\ufaff\u3040-\u309f\uac00-\ud7af]+[*?]*'
-find_glob  = re.compile(regex, re.UNICODE).findall
-class Splitter(object):  
-      
-    def __init__(self,text,route=route): 
+
+class BaseSplitter(object):
+    
+    def __init__(self,text): 
         self.text = text  
-        self.pos = 0  
+        self.pos = 0
         self.text_length = len(self.text)  
-        self.route = route  
-              
+    
     def next_char(self):  
         return self.text[self.pos]  
-          
+
     #判断该字符是否是中文字符（不包括中文标点）    
     def is_cjk_char(self,charater):  
         c = ord(charater)
@@ -62,7 +61,7 @@ class Splitter(object):
                0xf900<= c <=0xfaff or\
                0x3040<= c <=0x309f or\
                0xac00<= c <=0xd7af
-
+    
     #判断是否是ASCII码  
     def is_latin_char(self, ch):  
         import string  
@@ -71,22 +70,7 @@ class Splitter(object):
         if ch in string.punctuation:  
             return False  
         return ch in string.printable  
-      
-    #得到下一个切割结果  
-    def __iter__(self):  
-        while self.pos < self.text_length:  
-            if self.is_cjk_char(self.next_char()):  
-                for token in self.get_cjk_words():
-                    if token > 0:
-                        word = unicode(token)
-                        if word != 'X':
-                            yield word
-            else :  
-                token = self.get_latin_words() 
-                if len(token) > 0:  
-                    yield unicode(token)  
-        raise StopIteration
-      
+
     #切割出非中文词  
     def get_latin_words(self):  
         # Skip pre-word whitespaces and punctuations  
@@ -116,7 +100,56 @@ class Splitter(object):
             self.pos += 1  
               
         #返回英文单词  
-        return self.text[start:end]  
+        return self.text[start:end]
+
+    #运用正向最大匹配算法结合字典来切割中文文本    
+    def get_match_cjk_words(self):  
+        originalPos = self.pos  
+        words = []  
+        index = 0  
+        while self.pos < self.text_length:  
+            if index >= len(dict_words) :  
+                break  
+            if not self.is_cjk_char(self.next_char()):
+                break  
+            self.pos += 1  
+            index += 1  
+              
+            text = self.text[originalPos:self.pos]  
+            word = dict_words[text]  
+            if word:  
+                words.append(word)  
+                  
+        self.pos = originalPos  
+        if not words:  
+            word = Word()  
+            word.length = -1  
+            word.text = 'X'  
+            words.append(word)  
+        return words
+
+
+class Splitter(BaseSplitter):  
+      
+    def __init__(self,text,route=route): 
+        BaseSplitter.__init__(self, text)  
+        self.route = route  
+              
+      
+    #得到下一个切割结果  
+    def __iter__(self):  
+        while self.pos < self.text_length:  
+            if self.is_cjk_char(self.next_char()):  
+                for word in self.get_cjk_words():
+                    if len(word) > 0:
+                        word = unicode(word)
+                        if word != 'X':
+                            yield word
+            else :  
+                word = self.get_latin_words() 
+                if len(word) > 0:  
+                    yield unicode(word)  
+        raise StopIteration
       
     #切割出中文词，并且做处理，用上述4种方法  
     def get_cjk_words(self):  
@@ -156,44 +189,54 @@ class Splitter(object):
             self.pos -= len(word1.text)  
                                   
         self.pos = originalPos  
-        return chunks  
-      
-    #运用正向最大匹配算法结合字典来切割中文文本    
-    def get_match_cjk_words(self):  
-        originalPos = self.pos  
-        words = []  
-        index = 0  
-        while self.pos < self.text_length:  
-            if index >= len(dict_words) :  
-                break  
-            if not self.is_cjk_char(self.next_char()):
-                break  
-            self.pos += 1  
-            index += 1  
-              
-            text = self.text[originalPos:self.pos]  
-            word = dict_words[text]  
-            if word:  
-                words.append(word)  
-                  
-        self.pos = originalPos  
-        if not words:  
-            word = Word()  
-            word.length = -1  
-            word.text = 'X'  
-            words.append(word)  
-        return words
+        return chunks
 
-    def keywords(self):
-        words = set()
-        for item in find_glob(self.text):
-            if self.is_latin_char(item[0]):
-                words.add(item)
+
+class Keywords(BaseSplitter):
+    
+    def __init__(self, text):
+        BaseSplitter.__init__(self, text)
+        self.text = text
+        self.pos = 0
+        self.length = len(text) 
+
+    def __iter__(self):
+        result = set()
+        while self.pos < self.text_length:  
+            if self.is_cjk_char(self.next_char()):
+                words = self.get_match_cjk_words()
+                for word in words:
+                    word = unicode(word)
+                    if len(word) > 0 and not is_number(word):
+                        if word != 'X' and len(word) > 1:
+                            if word not in result:
+                                yield word
+                                result.add(word)
+                    elif len(word) > 0:#是数字
+                        word = unicode(words[len(words)-1])
+                        num = unicode(chinese_to_number(word))#换算出对应的数字
+                        if word not in result:
+                            yield word
+                            result.add(word)
+                        if num not in result:
+                            yield num
+                            result.add(num)
+
+                if len(words) == 1 and len(words[0]) == 1:
+                    word = unicode(words[0])
+                    if word not in result:
+                        if is_number(word):
+                            num = unicode(chinese_to_number(word))
+                            if num not in result:
+                                yield num
+                                result.add(num)
+                        yield word
+                        result.add(word)
+                self.pos += len(word)
             else:
-                max_length = len(item)
-                for i in range(max_length):
-                    for j in range(i,max_length):
-                        word=dict_words[item[i:j+1]]
-                        if word and len(word)>1:
-                            words.add(unicode(word))
-        return words
+                word = self.get_latin_words() 
+                if len(word) > 0:  
+                    word = unicode(word)
+                    if word not in result:
+                        yield word
+                        result.add(word)
