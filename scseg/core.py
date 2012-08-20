@@ -205,19 +205,19 @@ class Keywords(BaseSplitter):
         while self.pos < self.text_length:  
             if self.is_cjk_char(self.next_char()):
                 words = self.get_match_cjk_words()
-                for word in words:
+                for index,word in enumerate(words):
                     word = unicode(word)
                     if len(word) > 0 and not is_number(word):
                         if word != 'X' and len(word) > 1:
                             if word not in result:
                                 yield word
                                 result.add(word)
-                    elif len(word) > 0:#是数字
-                        word = unicode(words[len(words)-1])
-                        num = unicode(chinese_to_number(word))#换算出对应的数字
+                    elif len(word) > 0 and index == len(words)-1:#是数字
+                        word = unicode(word)
                         if word not in result:
                             yield word
                             result.add(word)
+                        num = unicode(chinese_to_number(word))#换算出对应的数字
                         if num not in result:
                             yield num
                             result.add(num)
