@@ -3,7 +3,7 @@ import os
 import re
 from route.mmseg import route
 from .word import Word,Dictionary
-from .digital import is_number,chinese_to_number
+from .digital import is_chinese_number,chinese_to_number
 
 here = os.path.abspath(os.path.dirname(__file__))
 dict_words = Dictionary(here+os.sep+'data')
@@ -207,7 +207,7 @@ class Keywords(BaseSplitter):
                 words = self.get_match_cjk_words()
                 for index,word in enumerate(words):
                     word = unicode(word)
-                    if len(word) > 0 and not is_number(word):
+                    if len(word) > 0 and not is_chinese_number(word):
                         if word != 'X' and len(word) > 1:
                             if word not in result:
                                 yield word
@@ -225,7 +225,7 @@ class Keywords(BaseSplitter):
                 if len(words) == 1 and len(words[0]) == 1:
                     word = unicode(words[0])
                     if word not in result:
-                        if is_number(word):
+                        if is_chinese_number(word):
                             num = unicode(chinese_to_number(word))
                             if num not in result:
                                 yield num

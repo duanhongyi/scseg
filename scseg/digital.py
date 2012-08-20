@@ -45,7 +45,7 @@ u'兆' : 1000000000000,
 has_unit  = re.compile((u'+[*?]*|'.join(CN_UNIT.keys())), re.UNICODE).findall
 
 chinese_number_regex =  '^['+u''.join(CN_UNIT.keys()+CN_NUM.keys())+']+$'
-is_number = re.compile(chinese_number_regex,re.UNICODE).match
+is_chinese_number = re.compile(chinese_number_regex,re.UNICODE).match
 
 
 def chinese_to_number(cn):

@@ -1,7 +1,7 @@
 #encoding:utf-8
 #词典
 import os
-from scseg.digital import is_number
+from scseg.digital import is_chinese_number
 
 #单个词实体映射
 class Word(object):
@@ -51,7 +51,7 @@ class Dictionary(object):
     def __getitem__(self,word):
         if Dictionary.dict_words.has_key(word):
             return Dictionary.dict_words[word]
-        elif is_number(word):#数字识别
+        elif is_chinese_number(word):#数字识别
             return Word(word,0)
         elif len(word) == 1:#生僻字词频为0
             return Word(word,0)
