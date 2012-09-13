@@ -18,7 +18,7 @@ class Chunk(object):
     def total_word_length(self):
         length = 0
         for word in self.words:
-            length += len(word.text)
+            length += len(word)
         return length
     
 	#计算平均长度
@@ -37,7 +37,7 @@ class Chunk(object):
         average = self.average_word_length()
         sum = 0.0
         for word in self.words:
-            tmp = (len(word.text) - average)
+            tmp = (len(word) - average)
             sum += float(tmp) * float(tmp)
         return sum
 
@@ -100,7 +100,7 @@ class BaseSplitter(object):
             self.pos += 1  
               
         #返回英文单词  
-        return self.text[start:end]
+        return Word(self.text[start:end])
 
     #运用正向最大匹配算法结合字典来切割中文文本    
     def get_match_cjk_words(self):  
@@ -121,11 +121,7 @@ class BaseSplitter(object):
                 words.append(word)  
                   
         self.pos = originalPos  
-        if not words:  
-            word = Word()  
-            word.length = -1  
-            word.text = 'X'  
-            words.append(word)  
+        if not words:words.append(Word('X',0,0))#添加结束词 
         return words
 
 
@@ -143,8 +139,7 @@ class Splitter(BaseSplitter):
                 for word in self.get_cjk_words():
                     if len(word) > 0:
                         word = unicode(word)
-                        if word != 'X':
-                            yield word
+                        yield word
             else :  
                 word = self.get_latin_words() 
                 if len(word) > 0:  
@@ -168,25 +163,25 @@ class Splitter(BaseSplitter):
         words1 = self.get_match_cjk_words()  
           
         for word1 in words1:  
-            self.pos += len(word1.text)  
+            self.pos += len(word1)  
             if self.pos < self.text_length:  
                 words2 = self.get_match_cjk_words()  
                 for word2 in words2:  
-                    self.pos += len(word2.text)  
+                    self.pos += len(word2)  
                     if self.pos < self.text_length:  
                         words3 = self.get_match_cjk_words()  
                         for word3 in words3:  
-                            if word3.length == -1:  
+                            if len(word3) == 0 and str(word3)=='X':  
                                 chunk = Chunk(word1,word2)  
                             else :  
                                 chunk = Chunk(word1,word2,word3)  
                             chunks.append(chunk)  
                     elif self.pos == self.text_length:  
                         chunks.append(Chunk(word1,word2))  
-                    self.pos -= len(word2.text)  
+                    self.pos -= len(word2)  
             elif self.pos == self.text_length:  
                 chunks.append(Chunk(word1))  
-            self.pos -= len(word1.text)  
+            self.pos -= len(word1)  
                                   
         self.pos = originalPos  
         return chunks
