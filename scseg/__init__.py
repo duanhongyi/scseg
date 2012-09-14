@@ -16,4 +16,4 @@ def keywords(text):
         encoding = chardet.detect(text)['encoding']
         text = unicode(text,encoding)
     words = Keywords(text)
-    return [word for word in words]
+    return set([word for word in words]).union([word for word in Splitter(text)])
