@@ -217,7 +217,7 @@ class Keyword(BaseSplitter):
             for j in range(words_length):
                 word = words[j]
                 if word.length > 1:
-                    yield word
+                    yield unicode(word)
                 elif word.length == 1 and i != all_words_length -1:
                     if len(all_words[i+1]) > 1:
-                        yield word
+                        yield unicode(word)
