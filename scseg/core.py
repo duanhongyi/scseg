@@ -187,7 +187,7 @@ class Splitter(BaseSplitter):
         return chunks
 
 
-class Keywords(BaseSplitter):
+class Keyword(BaseSplitter):
     
     def __init__(self, text):
         BaseSplitter.__init__(self, text)
@@ -195,43 +195,29 @@ class Keywords(BaseSplitter):
         self.pos = 0
         self.length = len(text) 
 
-    def __iter__(self):
-        result = set()
+    def get_all_words(self):
+        result = []
         while self.pos < self.text_length:  
             if self.is_cjk_char(self.next_char()):
                 words = self.get_match_cjk_words()
-                for index,word in enumerate(words):
-                    word = unicode(word)
-                    if len(word) > 0 and not is_chinese_number(word):
-                        if word != 'X' and len(word) > 1:
-                            if word not in result:
-                                yield word
-                                result.add(word)
-                    elif len(word) > 0 and index == len(words)-1:#是数字
-                        word = unicode(word)
-                        if word not in result:
-                            yield word
-                            result.add(word)
-                        num = unicode(chinese_to_number(word))#换算出对应的数字
-                        if num not in result:
-                            yield num
-                            result.add(num)
-
-                if len(words) == 1 and len(words[0]) == 1:
-                    word = unicode(words[0])
-                    if word not in result:
-                        if is_chinese_number(word):
-                            num = unicode(chinese_to_number(word))
-                            if num not in result:
-                                yield num
-                                result.add(num)
-                        yield word
-                        result.add(word)
-                self.pos += len(word)
+                result.append(words)
             else:
                 word = self.get_latin_words() 
-                if len(word) > 0:  
-                    word = unicode(word)
-                    if word not in result:
+                result.append([word,])
+            self.pos += 1
+        self.pos = 0
+        return result
+
+    def __iter__(self):
+        all_words = self.get_all_words()
+        all_words_length = len(all_words)#所有分词可能
+        for i in range(all_words_length):
+            words = all_words[i]
+            words_length = len(words)#当前chunks
+            for j in range(words_length):
+                word = words[j]
+                if word.length > 1:
+                    yield word
+                elif word.length == 1 and i != all_words_length -1:
+                    if len(all_words[i+1]) > 1:
                         yield word
-                        result.add(word)

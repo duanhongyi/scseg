@@ -1,7 +1,7 @@
 #encoding:utf-8
 
 import chardet
-from .core import Splitter,Keywords
+from .core import Splitter,Keyword
 from .route.mmseg import route
 
 def seg_text(text):
@@ -15,5 +15,5 @@ def keywords(text):
     if not isinstance(text,unicode):
         encoding = chardet.detect(text)['encoding']
         text = unicode(text,encoding)
-    words = Keywords(text)
-    return set([word for word in words]).union([word for word in Splitter(text)])
+    words = Keyword(text)
+    return set([word for word in words])
