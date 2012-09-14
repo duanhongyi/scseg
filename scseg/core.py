@@ -12,7 +12,11 @@ dict_words = Dictionary(here+os.sep+'data')
 class Chunk(object):
 
     def __init__(self,*words):
-        self.words = words
+        self.words = []
+        for word in words:
+            if len(word) == 0:
+                continue
+            self.words.append(word)
     
 	#计算chunk的总长度
     def total_word_length(self):
@@ -171,19 +175,15 @@ class Splitter(BaseSplitter):
                     if self.pos < self.text_length:  
                         words3 = self.get_match_cjk_words()  
                         for word3 in words3:  
-                            if len(word3) == 0 and str(word3)=='X':  
-                                chunk = Chunk(word1,word2)  
-                            else :  
-                                chunk = Chunk(word1,word2,word3)  
+                            chunk = Chunk(word1,word2,word3)  
                             chunks.append(chunk)  
-                    elif self.pos == self.text_length:  
+                    elif self.pos == self.text_length: 
                         chunks.append(Chunk(word1,word2))  
                     self.pos -= len(word2)  
-            elif self.pos == self.text_length:  
+            elif self.pos == self.text_length:
                 chunks.append(Chunk(word1))  
             self.pos -= len(word1)  
-                                  
-        self.pos = originalPos  
+        self.pos = originalPos
         return chunks
 
 
