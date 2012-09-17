@@ -194,6 +194,9 @@ class Keyword(BaseSplitter):
         self.text = text
         self.pos = 0
         self.length = len(text) 
+        self.terms_group = self.get_all_words()
+        self.group_length = len(self.terms_group)
+        self.iter_pos = 0
 
     def get_all_words(self):
         result = []
@@ -201,7 +204,7 @@ class Keyword(BaseSplitter):
             if self.is_cjk_char(self.next_char()):
                 words = self.get_match_cjk_words()
                 result.append(words)
-            else:
+            elif self.is_latin_char(self.next_char()):
                 word = self.get_latin_words() 
                 result.append([word,])
             self.pos += 1
@@ -209,15 +212,23 @@ class Keyword(BaseSplitter):
         return result
 
     def __iter__(self):
-        all_words = self.get_all_words()
-        all_words_length = len(all_words)#所有分词可能
-        for i in range(all_words_length):
-            words = all_words[i]
+        for i in range(self.group_length):
+            self.iter_pos = i
+            words = self.terms_group[i]
             words_length = len(words)#当前chunks
             for j in range(words_length):
                 word = words[j]
-                if word.length > 1:
+                if self.is_keyword(word):
                     yield unicode(word)
-                elif word.length == 1 and i != all_words_length -1:
-                    if len(all_words[i+1]) > 1:
-                        yield unicode(word)
+        self.iter_pos = 0
+
+    def is_keyword(self, word):
+        if word.length > 1:
+            return True
+        elif self.iter_pos == self.group_length -1:#最后一个单词
+            #if len(self.terms_group[self.iter_pos-1]) == 1:
+            return True
+        elif len(self.terms_group[self.iter_pos+1]) > 1:
+            return True
+        return False
+
