@@ -208,6 +208,8 @@ class Keyword(BaseSplitter):
             elif self.is_latin_char(self.next_char()):
                 word = self.get_latin_words() 
                 result.append([word,])
+            else:
+                self.pos += 1
         self.pos = 0
         return result
 
