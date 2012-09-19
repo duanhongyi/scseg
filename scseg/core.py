@@ -218,7 +218,6 @@ class Keyword(BaseSplitter):
             words_length = len(words)#当前chunks
             for j in range(words_length):
                 word = words[j]
-                print('debug:%s' % unicode(word))
                 if word.length > 1 or words_length == 1:
                     yield unicode(word)
         self.iter_pos = 0
