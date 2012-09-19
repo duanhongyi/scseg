@@ -14,7 +14,7 @@ requires = [
     ]
 
 setup(name='scseg',
-      version='1.4.1',
+      version='1.4.3',
       description='a python chinese seg word',
       long_description=README + '\n\n' +  CHANGES,
       classifiers=[

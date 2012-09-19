@@ -204,10 +204,10 @@ class Keyword(BaseSplitter):
             if self.is_cjk_char(self.next_char()):
                 words = self.get_match_cjk_words()
                 result.append(words)
+                self.pos += 1
             elif self.is_latin_char(self.next_char()):
                 word = self.get_latin_words() 
                 result.append([word,])
-            self.pos += 1
         self.pos = 0
         return result
 
@@ -218,17 +218,7 @@ class Keyword(BaseSplitter):
             words_length = len(words)#当前chunks
             for j in range(words_length):
                 word = words[j]
-                if self.is_keyword(word):
+                print('debug:%s' % unicode(word))
+                if word.length > 1 or words_length == 1:
                     yield unicode(word)
         self.iter_pos = 0
-
-    def is_keyword(self, word):
-        if word.length > 1:
-            return True
-        elif self.iter_pos == self.group_length -1:#最后一个单词
-            #if len(self.terms_group[self.iter_pos-1]) == 1:
-            return True
-        elif len(self.terms_group[self.iter_pos+1]) > 1:
-            return True
-        return False
-
