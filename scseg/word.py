@@ -9,7 +9,10 @@ class Word(object):
     def __init__(self,text = '',freq = 0,length = -1):
         self.text = text#词
         self.freq = freq#词频
-        self.length = len(text) if length<0 else length#有效词长
+        if text != 'X':
+            self.length = len(text) if length<0 else length#有效词长
+        else:
+            self.length = 0
 
     def __str__(self):
         return self.text
