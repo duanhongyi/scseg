@@ -124,7 +124,7 @@ class BaseSplitter(object):
             word = dict_words[text]  
             if word:  
                 words.append(word)
-            elif text in ext_dict_words:
+            elif text in self.ext_dict_words:
                 words.append(Word(text,0))
                   
         self.pos = originalPos  
