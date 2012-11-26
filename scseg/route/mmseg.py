@@ -27,6 +27,8 @@ class Router(object):
         if len(chunks) > 1:
             chunks = self.smallest_variance(chunks)
         if len(chunks) > 1:
+            chunks = self.effective_count(chunks)
+        if len(chunks) > 1:
             chunks = self.morphemic_freedom(chunks)
         return chunks
 
@@ -52,6 +54,14 @@ class Router(object):
         """
         def comparator(a,b):
             return b.standard_deviation() - a.standard_deviation()
+        return self.compare(chunks, comparator)
+
+    def effective_count(self, chunks):
+        """
+        有效词数量
+        """
+        def comparator(a,b):
+            return a.effective_word_number() - b.effective_word_number()
         return self.compare(chunks, comparator)
     
     def morphemic_freedom(self,chunks):

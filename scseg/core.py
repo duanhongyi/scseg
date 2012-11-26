@@ -29,12 +29,20 @@ class Chunk(object):
     def average_word_length(self):
         return float(self.total_word_length()) / float(len(self.words))
 
+    #统计有效词数
+    def effective_word_number(self):
+        _sum = 0
+        for word in self.words:
+            if len(word) > 1 and word.freq >=0:
+                _sum += 1
+        return _sum
+
     #统计词频
     def word_frequency(self):
-        sum = 0
+        _sum = 0
         for word in self.words:
-            sum += word.freq
-        return sum
+            _sum += word.freq
+        return _sum
     
 	#计算标准差
     def standard_deviation(self):
@@ -125,7 +133,7 @@ class BaseSplitter(object):
             if word:  
                 words.append(word)
             elif text in self.ext_dict_words:
-                words.append(Word(text,0))
+                words.append(Word(text,-1))
                   
         self.pos = originalPos  
         if not words:words.append(Word('X',0,0))#添加结束词 
