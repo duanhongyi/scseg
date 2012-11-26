@@ -49,10 +49,11 @@ class Chunk(object):
 
 class BaseSplitter(object):
     
-    def __init__(self,text): 
+    def __init__(self,text,ext_dict_words=set()): 
         self.text = text  
         self.pos = 0
         self.text_length = len(self.text)  
+        self.ext_dict_words = ext_dict_words
     
     def next_char(self):  
         return self.text[self.pos]  
@@ -122,7 +123,9 @@ class BaseSplitter(object):
             text = self.text[originalPos:self.pos]  
             word = dict_words[text]  
             if word:  
-                words.append(word)  
+                words.append(word)
+            elif text in ext_dict_words:
+                words.append(Word(text,0))
                   
         self.pos = originalPos  
         if not words:words.append(Word('X',0,0))#添加结束词 
@@ -131,8 +134,8 @@ class BaseSplitter(object):
 
 class Splitter(BaseSplitter):  
       
-    def __init__(self,text,route=route): 
-        BaseSplitter.__init__(self, text)  
+    def __init__(self,text,ext_dict_words=[],route=route): 
+        BaseSplitter.__init__(self, text, ext_dict_words)  
         self.route = route  
               
       
