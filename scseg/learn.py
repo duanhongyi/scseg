@@ -41,4 +41,4 @@ class Learning(object):
         with open(path,'w') as f:
             for word in self.cache.viewitems():
                 if word[1]>=self.times:
-                    f.write(word[0].encode("utf-8")+'\n')
+                    f.write('%s\t%s\n' % (word[0].encode("utf-8"),word[1]))
