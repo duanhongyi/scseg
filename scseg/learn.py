@@ -35,6 +35,12 @@ class Learning(object):
                             self.cache[new_word] = 1
                     del tmp
                     tmp = []
+            new_word = ''.join(tmp)
+            if new_word:
+                if new_word in self.cache:
+                    self.cache[new_word] += 1
+                else:
+                    self.cache[new_word] = 1
             if count%1000 == 0:
                 print("count:%d" % count)
     def save(self,path):

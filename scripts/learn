@@ -1,8 +1,14 @@
 #encoding:utf-8
 
+import os
 import sys
+import scseg
 from scseg.learn import Learning
 
+if os.path.exists('data'):
+    scseg.word.Dictionary.dict_words = {}
+    dict_words = scseg.word.Dictionary('data')
+    scseg.core.dict_words = dict_words
 def learn():
     try:
         if len(sys.argv) == 4:
