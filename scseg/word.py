@@ -26,27 +26,33 @@ class Word(object):
 class Dictionary(object):
 
     dict_words = {}
-
+    quantifier_words = set()
     def __init__(self,root_path):
         #载入字库
         if not Dictionary.dict_words:
             for path in os.listdir(root_path): 
                 if path.endswith('.dic'):
                     self.load(os.sep.join([root_path,path]))
+                elif path.endswith("unit"):#单位
+                    self.load(os.sep.join([root_path,path]), 'unit')
 
     @staticmethod
-    def load(path):
+    def load(path,ftype="dic"):
         """
         载入字典
         """
-        for line in open(path):
-            words = line.split(' ')
-            if len(words)==2:
-                word = unicode(words[0].strip(), 'utf-8')
-                Dictionary.dict_words[word] = Word(word, int(words[1]))
-            elif len(words)==1:
-                word = unicode(words[0].strip(),'utf-8')
-                Dictionary.dict_words[word] = Word(word,0)
+        with open(path) as f:
+            for line in f:
+                words = line.split(' ')
+                if ftype == 'dic':
+                    if len(words)==2:
+                        word = unicode(words[0].strip(), 'utf-8')
+                        Dictionary.dict_words[word] = Word(word, int(words[1]))
+                    elif len(words)==1:
+                        word = unicode(words[0].strip(),'utf-8')
+                        Dictionary.dict_words[word] = Word(word,0)
+                elif ftype == 'unit':
+                    Dictionary.quantifier_words.add(unicode(words[0].strip(),"utf-8"))
 
     def __len__(self):
         return len(self.dict_words)
