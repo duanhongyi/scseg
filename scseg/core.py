@@ -1,17 +1,19 @@
 #encoding:utf-8
 import os
 import re
+import string
 from route.mmseg import route
-from .word import Word,Dictionary
-from .digital import is_chinese_number,chinese_to_number
+from .word import Word, Dictionary
+
 
 here = os.path.abspath(os.path.dirname(__file__))
 dict_words = Dictionary(here+os.sep+'data')
+group_char = re.compile(u'[a-zA-Z]+[*?]*|[0-9]+[*?]*|.+[*?]*', re.UNICODE).findall
 
 
 class Chunk(object):
 
-    def __init__(self,*words):
+    def __init__(self, *words):
         self.words = []
         for word in words:
             if len(word) == 0:
@@ -47,17 +49,17 @@ class Chunk(object):
 	#计算标准差
     def standard_deviation(self):
         average = self.average_word_length()
-        sum = 0.0
+        _sum = 0.0
         for word in self.words:
             tmp = (len(word) - average)
-            sum += float(tmp) * float(tmp)
-        return sum
+            _sum += float(tmp) * float(tmp)
+        return _sum
 
 
 
 class BaseSplitter(object):
     
-    def __init__(self,text,ext_dict_words=set()): 
+    def __init__(self, text, ext_dict_words=set()): 
         self.text = text  
         self.pos = 0
         self.text_length = len(self.text)  
@@ -66,18 +68,18 @@ class BaseSplitter(object):
     def next_char(self):  
         return self.text[self.pos]  
 
-    #判断该字符是否是中文字符（不包括中文标点）    
-    def is_cjk_char(self,charater):  
+    @staticmethod
+    def is_cjk_char(charater):  
         c = ord(charater)
-        return 0x4E00<= c <=0x9FFF or\
-               0x3400<= c <=0x4dbf or\
-               0xf900<= c <=0xfaff or\
-               0x3040<= c <=0x309f or\
-               0xac00<= c <=0xd7af
+        return 0x4E00 <= c <= 0x9FFF or\
+               0x3400 <= c <= 0x4dbf or\
+               0xf900 <= c <= 0xfaff or\
+               0x3040 <= c <= 0x309f or\
+               0xac00 <= c <= 0xd7af
     
-    #判断是否是ASCII码  
-    def is_latin_char(self, ch):  
-        import string  
+    #判断是否是ASCII码
+    @staticmethod
+    def is_latin_char(ch):  
         if ch in string.whitespace:  
             return False  
         if ch in string.punctuation:  
@@ -133,19 +135,19 @@ class BaseSplitter(object):
             if word:  
                 words.append(word)
             elif text in self.ext_dict_words:
-                words.append(Word(text,-1))
+                words.append(Word(text, -1))
                   
         self.pos = originalPos  
-        if not words:words.append(Word('X',0,0))#添加结束词 
+        if not words:
+            words.append(Word('X', 0, 0))#添加结束词 
         return words
 
 
 class Splitter(BaseSplitter):  
       
-    def __init__(self,text,ext_dict_words=[],route=route): 
+    def __init__(self, text, ext_dict_words=[], route=route):
         BaseSplitter.__init__(self, text, ext_dict_words)  
         self.route = route  
-              
       
     #得到下一个切割结果  
     def __iter__(self):  
@@ -157,8 +159,9 @@ class Splitter(BaseSplitter):
                         yield word
             else :  
                 word = self.get_latin_words() 
-                if len(word) > 0:  
-                    yield unicode(word)  
+                if len(word) > 0:
+                    for word in group_char(unicode(word)):
+                        yield word 
         raise StopIteration
       
     #切割出中文词，并且做处理，用上述4种方法  
@@ -186,10 +189,10 @@ class Splitter(BaseSplitter):
                     if self.pos < self.text_length:  
                         words3 = self.get_match_cjk_words()  
                         for word3 in words3:  
-                            chunk = Chunk(word1,word2,word3)  
+                            chunk = Chunk(word1, word2, word3)  
                             chunks.append(chunk)  
                     elif self.pos == self.text_length: 
-                        chunks.append(Chunk(word1,word2))  
+                        chunks.append(Chunk(word1, word2))  
                     self.pos -= len(word2)  
             elif self.pos == self.text_length:
                 chunks.append(Chunk(word1))  

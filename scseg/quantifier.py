@@ -11,8 +11,8 @@ def combine_quantifier(words):
     result = []
     while pos < words_length:
         word1 = words[pos]
-        if re.match('^%s$' % number_pattern, word1) or\
-            is_chinese_number(word1):
+        if (re.match('^%s$' % number_pattern, word1) or\
+            is_chinese_number(word1)) and pos < words_length -1:
                 word2 = words[pos+1]
                 if word2 in Dictionary.quantifier_words:
                     result.append(word1+word2)
