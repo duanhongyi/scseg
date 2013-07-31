@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Scseg by duanhongyi</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Scseg</h1>
+        <p></p>
+
+        <p class="view"><a href="https://github.com/duanhongyi/scseg">View the Project on GitHub <small>duanhongyi/scseg</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/duanhongyi/scseg/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/duanhongyi/scseg/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/duanhongyi/scseg">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <p>1、seg_text方法主要是分词使用。可以调用scseg包下的seg_text方法进行分词。例如：seg_text(u'第四十七中学')</p>
+
+<p>2、另外提供个自学习的小工具，可以根据文本提取词组。提供个以\n字符作为分割的语料，输入learn命令，即可以学习出词组。</p>
+
+<p>3、learn命令说明：learn 3 /home/xxx/corpus.txt /home/xxx/save_file.txt,其中3代表出现的次数，即两个字连续出现次数大于3次的我们认为是一个词。/home/xxx/corpus.txt代表的是语料库的位置，/home/xxx/save_file.txt代表的是学习结果存储的位置。</p>
+
+<p>4、用户可以自定义词库，只需将词库的扩展名为dic，的文件放入scseg/data目录下即可，格式参考原有词库。也可以调用word模块下Dictionary的load函数，自定义词典目录位置。</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/duanhongyi">duanhongyi</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
