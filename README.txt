@@ -1,7 +1,52 @@
-1、seg_text方法主要是分词使用。可以调用scseg包下的seg_text方法进行分词。例如：seg_text(u'第四十七中学')
+genius
+========
+scseg中文分词，是基于mmseg的简单分词组件
 
-2、另外提供个自学习的小工具，可以根据文本提取词组。提供个以\n字符作为分割的语料，输入learn命令，即可以学习出词组。
 
-3、learn命令说明：learn 3 /home/xxx/corpus.txt /home/xxx/save_file.txt,其中3代表出现的次数，即两个字连续出现次数大于3次的我们认为是一个词。/home/xxx/corpus.txt代表的是语料库的位置，/home/xxx/save_file.txt代表的是学习结果存储的位置。
+Feature
+========
+* 支持pinyin分词
+* 支持用户自定义词典
+* 支持单位合并
+* 支持汉字数字识别
 
-4、用户可以自定义词库，只需将词库的扩展名为dic，的文件放入scseg/data目录下即可，格式参考原有词库。也可以调用word模块下Dictionary的load函数，自定义词典目录位置。
+Install
+==========
+* `pip install scseg`
+* 通过`import scseg`来引用
+
+
+Algorithm
+==========
+* 采用mmseg算法进行切分
+* 采用规则方式支持中文数字分词
+
+功能 1)：分词`scseg.seg_text`方法
+==============
+
+* `scseg.seg_text`函数接受3个参数: 
+* `text`参数为需要分词的字符 
+* `ext_dict_words`为用户自定义的扩展字典
+* `use_combine`代表是否需要合并处理
+
+代码示例( 全功能分词 )
+
+    #encoding=utf-8
+    import genius
+
+    seg_list = scseg.seg_text(u'中国人民站起来了pinyin')
+    print '\n'.join(seg_list)
+
+
+功能 2)：面向索引的分词`scseg.seg_keywords`方法
+==============
+* 其作用是枚举出所有可能的切割方式
+* `text`参数为需要分词的字符 
+
+代码示例( 全功能分词 )
+
+    #encoding=utf-8
+    import genius
+
+    seg_list = scseg.seg_keywords(u'中国人民站起来了pinyin')
+    print '\n'.join(seg_list)
