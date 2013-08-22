@@ -1,4 +1,4 @@
-genius
+scseg
 ========
 scseg中文分词，是基于mmseg的简单分词组件
 
