@@ -38,8 +38,9 @@ Algorithm
     print '\n'.join(seg_list)
 
 
-功能 2)：面向索引的分词`scseg.seg_keywords`方法
+功能 2)：面向索引的分词
 ==============
+* `scseg.seg_keywords`为面向索引的切割方式
 * 其作用是枚举出所有可能的切割方式
 * `text`参数为需要分词的字符 
 
